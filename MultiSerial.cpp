@@ -9,9 +9,12 @@
 // include description files for Wire, as the shield uses I2C
 #include "Wire.h"
 
+// Revision 1 boards have a 1.8432MHz crystal on them
 //#define MS_HZ 1843200L
-#define   MS_HZ 11059200L
+// Revision 2 boards have a 3.6864MHz crystal on them
 //#define MS_HZ   3686400L
+// Revision 3 and above boards have a 11.0592MHz crystal on them
+#define   MS_HZ 11059200L
   
 // Constructor /////////////////////////////////////////////////////////////////
 // Function that handles the creation and setup of instances
@@ -19,12 +22,16 @@
 MultiSerial::MultiSerial(byte shieldAddress, byte myChannel) {
   addr = shieldAddress;
   chan = myChannel;
+  
+  // each channel gets a one byte 'peek buffer', to support peek() even though
+  // the hardware itself has no ability to peek into the buffer
   peek_buf_valid[0] = 0;
   peek_buf_valid[1] = 0;
 }
 
 MultiSerial::MultiSerial(void) {
-  // they can call the 'real' constructor above later
+  // this 'fake constructor' allows creating an 'empty' MultiSerial type variable
+  // later on, the 'real constructor' can be called to actually begin using it.
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
@@ -37,7 +44,7 @@ void MultiSerial::begin(unsigned long baud) {
   msWriteRegister(IOControl, 0x8);
   delay(25);
   
-  // switch to the special registers
+  // switch to the special register bank
   msWriteRegister(LCR, 128);
 
   // set the baud rate
@@ -45,17 +52,8 @@ void MultiSerial::begin(unsigned long baud) {
   baudDivisor = (MS_HZ + baud * 8L) / (baud * 16L);
   msWriteRegister(DLL, baudDivisor & 0xFF);
   msWriteRegister(DLH, baudDivisor >> 8);
-  
-  /*
-  Serial.print("Sizeof: ");
-  Serial.println(sizeof(baud), DEC);
-  Serial.print("DLL: ");
-  Serial.println(baudDivisor & 0xFF, DEC);
-  Serial.print("DLH: ");
-  Serial.println(baudDivisor >> 8, DEC);
-  */
-  
-  // switch back to the normal registers
+    
+  // switch back to the normal register bank
   msWriteRegister(LCR, 0);
   
   // set the word size to 8 bits
@@ -79,8 +77,6 @@ int MultiSerial::read(void) {
 }
 
 int MultiSerial::available(void) {
-  // FIXME: umm, what?  this only works if we read the register twice, for some reason...
-//  msReadRegister(RXLVL);
   if(peek_buf_valid[chan]) return 1;
   return msReadRegister(RXLVL);
 }
