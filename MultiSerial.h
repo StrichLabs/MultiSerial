@@ -1,0 +1,83 @@
+/*
+  MultiSerial.h - Arduino library for the StrichLabs MultiSerial Shield - description
+  Copyright (c) 2010 Sarah Nordstrom.  Licensed under Creative Commons BY-NC-SA.
+*/
+
+// ensure this library description is only included once
+#ifndef MultiSerial_h
+#define MultiSerial_h
+
+// include core Wiring API
+#include "WProgram.h"
+// include types & constants of Wiring core API
+#include "WConstants.h"
+// include print support
+#include "Stream.h"
+
+// General register set
+#define RHR       0x00    // Receive Holding Register - R
+#define THR       0x00    // Transmit Holding Register - W
+#define IER       0x01    // Interrupt Enable Register - W
+#define FCR       0x02    // FIFO Control Register - W
+#define IIR       0x02    // Interrupt Identification Register - R
+#define LCR       0x03    // Line Control Register - R/W
+#define MCR       0x04    // Modem Control Register - R/W
+#define LSR       0x05    // Line Status Register - R
+#define MSR       0x06    // Modem Status Register - R
+#define SPR       0x07    // Scratchpad Register - R/W
+#define TCR       0x06    // Transmission Control Register- R/W
+#define TLR       0x07    // Trigger Level Register- R/W
+#define TXLVL     0x08    // Transmitter FIFO Level Register - R
+#define RXLVL     0x09    // Receiver FIFO Level Register- R
+#define IODir     0x0A    // GPIO Direction Register - R/W
+#define IOState   0x0B    // GPIO State Register - R/W
+#define IOIntEna  0x0C    // GPIO Interrupt Enable Register - R/W
+#define IOControl 0x0E    // GPIO Control Register - R/W
+#define EFCR      0x0F    // Extra Features Control Register- R/W
+
+// Special register set
+// if LCR[7] == 1 and LCR != 0xBF, these registers are accessed
+#define DLL       0x00     // BRG Divisor Low Byte Register - R/W
+#define DLH       0x01     // BRG Divisor Low Byte Register - R/W
+
+// Enhanced register set
+// if LCR = 0xBF, these registers are accessed
+#define EFR       0x02    // Enhanced Features Register - R/W
+#define XON1      0x04    // XON1 Word - R/W
+#define XON2      0x05    // XON2 Word - R/W
+#define XOFF1     0x06    // XOFF1 Word - R/W
+#define XOFF2     0x07    // XOFF1 Word - R/W
+
+// library interface description
+class MultiSerial : public Stream {
+  // user-accessible "public" interface
+  public:
+    MultiSerial(byte, byte);
+    MultiSerial(void);
+    void begin(unsigned long);
+    virtual void write(uint8_t);
+    virtual int read(void);
+    virtual int available(void);
+    virtual void flush(void);
+    virtual int peek(void);
+    void store(byte);
+    byte retrieve(void);
+    void setWordSize(byte);
+    void pinMode(byte, byte);
+    void digitalWrite(byte, byte);
+    byte digitalRead(byte);
+    void enableInterrupt(void);
+    using Print::write; // pull in write(str) and write(buf, size) from Print
+  
+  // library-accessible "private" interface
+  private:
+    byte addr;
+    byte chan;
+    byte peek_buf[2];
+    byte peek_buf_valid[2];
+    void msWriteRegister(byte, byte);
+    byte msReadRegister(byte);
+    void msSendSubAddr(byte);
+};
+
+#endif

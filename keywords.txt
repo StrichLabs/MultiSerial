@@ -1,0 +1,36 @@
+#######################################
+# Syntax Coloring Map For MultiSerial
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MultiSerial	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin KEYWORD2
+write KEYWORD2
+read KEYWORD2
+available KEYWORD2
+flush KEYWORD2
+peek KEYWORD2
+store KEYWORD2
+retrieve KEYWORD2
+setWordSize KEYWORD2
+pinMode KEYWORD2
+digitalWrite KEYWORD2
+digitalRead KEYWORD2
+enableInterrupt KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
