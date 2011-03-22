@@ -1,0 +1,12 @@
+#include <MultiSerial.h>
+
+// Create a MultiSerial instance to communicate with port 0 on shield 0x4D
+MultiSerial msInstance = MultiSerial(0x4D, 0);
+
+void setup() {
+  // Set up port for communications at 9600 bits per second
+  msInstance.begin(9600);
+  
+  // Change the word size to 7 bits
+  msInstance.setWordSize(7);
+}

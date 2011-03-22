@@ -1,0 +1,14 @@
+#include <MultiSerial.h>
+
+// Create a MultiSerial instance to communicate with port 0 on shield 0x4D
+MultiSerial msInstance = MultiSerial(0x4D, 0);
+
+void setup() {
+  byte data;
+
+  // Store the number 42 associated with shield 4D, port 0 (as initialized above)
+  msInstance.write(42);
+  
+  // Read back the byte associated with this shield
+  data = msInstance.retrieve();
+}

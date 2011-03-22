@@ -1,0 +1,12 @@
+#include <MultiSerial.h>
+
+// Create a MultiSerial instance to communicate with port 0 on shield 0x4D
+MultiSerial msInstance = MultiSerial(0x4D, 0);
+
+void setup() {
+  // Configure GPIO pin 0 as an output
+  msInstance.pinMode(0, OUTPUT);
+  
+  // Set GPIO pin 0 to a HIGH level
+  msInstance.digitalWrite(0, HIGH);
+}

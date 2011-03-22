@@ -48,6 +48,10 @@
 #define XOFF1     0x06    // XOFF1 Word - R/W
 #define XOFF2     0x07    // XOFF1 Word - R/W
 
+// Interrupt types for enableInterrupt/disableInterrupt
+#define INT_RX    0x01    // Receive Holding Register
+#define INT_TX    0x02    // Transmit Holding Register
+
 // library interface description
 class MultiSerial : public Stream {
   // user-accessible "public" interface

@@ -1,0 +1,14 @@
+#include <MultiSerial.h>
+
+// Create a MultiSerial instance to communicate with port 0 on shield 0x4D
+MultiSerial msInstance = MultiSerial(0x4D, 0);
+
+void setup() {
+  // Set up port for communications at 9600 bits per second
+  msInstance.begin(9600);
+  
+  // the device we're talking to generates garbage as it starts, use flush() to get rid of it
+  // after waiting one second for the device to start
+  delay(1000);
+  msInstance.flush();
+}

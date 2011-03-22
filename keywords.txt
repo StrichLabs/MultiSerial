@@ -25,6 +25,7 @@ pinMode KEYWORD2
 digitalWrite KEYWORD2
 digitalRead KEYWORD2
 enableInterrupt KEYWORD2
+disableInterrupt KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)

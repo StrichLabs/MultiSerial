@@ -1,0 +1,19 @@
+#include <MultiSerial.h>
+
+// Create a MultiSerial instance to communicate with port 0 on shield 0x4D
+MultiSerial msInstance = MultiSerial(0x4D, 0);
+
+void dataReceived() {
+  // this will be called each time there's new data in the shield's receive buffer
+}
+
+void setup() {
+  // Set up port for communications at 9600 bits per second
+  msInstance.begin(9600);
+  
+  // Turn on the shield's receive interrupt
+  msInstance.enableInterrupt(INT_RX);
+  
+  // Attach the Arduino's interrupt pin 0 to the 'dataReceived' function
+  attachInterrupt(0, dataReceived, FALLING);
+}

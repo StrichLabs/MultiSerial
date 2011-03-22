@@ -19,6 +19,11 @@
 // Constructor /////////////////////////////////////////////////////////////////
 // Function that handles the creation and setup of instances
 
+// Description: Creates a variable of type MultiSerial, to communciate with the MultiSerial Shield.
+// Syntax: MultiSerial(address, port)
+// Parameter: address - Address on the I2C bus of the shield to communicate with
+// Parameter: port - Which port (0 or 1) on the shield to associate this instance with
+// Returns: Instance of MultiSerial associated with a specific port on a specific shield. 
 MultiSerial::MultiSerial(byte shieldAddress, byte myChannel) {
   addr = shieldAddress;
   chan = myChannel;
@@ -36,6 +41,11 @@ MultiSerial::MultiSerial(void) {
 
 // Public Methods //////////////////////////////////////////////////////////////
 // Functions available in Wiring sketches, this library, and other libraries
+
+// Description: Sets the data rate in bits per second for serial data transmission.
+// Syntax: MultiSerialInstance.begin(speed)
+// Parameter: speed - communications speed in bits per second
+// Returns: nothing
 void MultiSerial::begin(unsigned long baud) {
   // join i2c bus (no address as we want to be the master)
   Wire.begin();
@@ -63,10 +73,19 @@ void MultiSerial::begin(unsigned long baud) {
   msWriteRegister(FCR, 7);
 }
 
+// Description: Transmit a byte of data out the serial port.
+// Syntax: MultiSerialInstance.write(data)
+// Parameter: data - byte of data to write
+// Returns: nothing
+// FIXME: This function should return something useful
 void MultiSerial::write(uint8_t val) {
   msWriteRegister(THR, val);
 }
 
+// Description: Read the next available byte of available serial data.
+// Syntax: MultiSerialInstance.read()
+// Parameter: none
+// Returns: first available byte of serial data, or -1 if no data is available
 int MultiSerial::read(void) {
   if(peek_buf_valid[chan]) {
     peek_buf_valid[chan] = 0;
@@ -76,24 +95,44 @@ int MultiSerial::read(void) {
   }
 }
 
+// Description: Get the number of bytes available for reading from the serial port.
+// Syntax: MultiSerialInstance.available()
+// Parameter: none
+// Returns: number of bytes available to read
 int MultiSerial::available(void) {
   if(peek_buf_valid[chan]) return 1;
   return msReadRegister(RXLVL);
 }
 
+// Description: Store one byte of data associated with a specific shield and port.  This byte is stored on the shield itself, not in the Arduino's memory.  Each successive call to store() will overwrite any previous byte stored.
+// Syntax: MultiSerialInstance.store(data)
+// Parameter: one byte of data to associate with a specific port on a specific shield
+// Returns: nothing
 void MultiSerial::store(byte val) {
   msWriteRegister(SPR, val);
 }
 
+// Description: Retrieve the byte of data aassociated with a specific shield and port, that had been stored earlier.
+// Syntax: MultiSerialInstance.retrieve()
+// Parameter: none
+// Returns: one byte of data that is associated with a specific port on a specific shield
 byte MultiSerial::retrieve(void) {
   return msReadRegister(SPR);
 }
 
+// Description: Flush all waiting data out of the buffer.
+// Syntax: MultiSerialInstance.flush()
+// Parameter: none
+// Returns: nothing
 void MultiSerial::flush() {
-  // needed for Stream support, but we don't need to do anything
-  // FIXME: what? why not? it seems like we should flush the buffer..
+  msWriteRegister(FCR, 6);    // flush receive FIFO
+  peek_buf_valid[chan] = 0;   // invalidate peek buffer  
 }
 
+// Description: Read the next available byte of available serial data, but leave it in the buffer.  Every call to peek() will return the same byte of data, until read() is called to return/remove it from the buffer or flush() is called to purge it.
+// Syntax: MultiSerialInstance.peek()
+// Parameter: none
+// Returns: first available byte of serial data, or -1 if no data is available
 int MultiSerial::peek() {
   if(peek_buf_valid[chan]) return peek_buf[chan];
   if(msReadRegister(RXLVL) < 1) return -1;
@@ -102,6 +141,11 @@ int MultiSerial::peek() {
   return peek_buf[chan];
 }
 
+// Description: Configured the specified GPIO pin to be an input or an output.
+// Syntax: MultiSerialInstance.pinMode(pin, mode);
+// Parameter: pin - GPIO pin number to change
+// Parameter: mode - either INPUT or OUTPUT
+// Returns: nothing
 void MultiSerial::pinMode(byte pin, byte direction) {
   byte regDirs;
 
@@ -115,6 +159,11 @@ void MultiSerial::pinMode(byte pin, byte direction) {
   msWriteRegister(IODir, regDirs);
 }
 
+// Description: Set a specified GPIO pin to a HIGH or LOW state.  Unlike the Arduino digital pins, these do not have pullup resistors, so digitalWrite when the pin is set to an input has no effect.
+// Syntax: MultiSerialInstance.digitalWrite(pin, value)
+// Parameter: pin - GPIO pin number to change
+// Parameter: value - HIGH or LOW
+// Returns: nothing
 void MultiSerial::digitalWrite(byte pin, byte value) {
   byte regValues;
   
@@ -127,6 +176,10 @@ void MultiSerial::digitalWrite(byte pin, byte value) {
   msWriteRegister(IOState, regValues);
 }
 
+// Description: Read the current value of a specific GPIO pin.
+// Syntax: MultiSerialInstance.digitalRead(pin)
+// Parameter: pin - GPIO pin number to read the value of
+// Returns: HIGH or LOW
 byte MultiSerial::digitalRead(byte pin) {
   byte regValues;
   
@@ -138,6 +191,10 @@ byte MultiSerial::digitalRead(byte pin) {
   }
 }
 
+// Description: Set the data word size to use on a specific serial port.  Defaults to 8 bits when begin() is called, but can be changed if required.
+// Syntax: MultiSerialInstance.setWordSize(size)
+// Parameter: size - word size to use on the port, valid values are 5, 6, 7, or 8
+// Returns: nothing
 void MultiSerial::setWordSize(byte wordSize) {
   byte curValue;
   
@@ -146,8 +203,22 @@ void MultiSerial::setWordSize(byte wordSize) {
   msWriteRegister(LCR, curValue | wordSize);
 }
 
-void MultiSerial::enableInterrupt(void) {
-  msWriteRegister(IER, 1);
+// Description: Enable specific interrupt types.
+// Syntax: MultiSerialInstance.enableInterrupt(types)
+// Parameter: types - bitmask of INT_RX and/or INT_TX for which interrupt(s) to enable
+// Returns: nothing
+void MultiSerial::enableInterrupt(byte interruptTypes) {
+  byte curIntFlags = msReadRegister(IER) & (INT_RX | INT_TX);
+  msWriteRegister(IER, (interruptTypes | curIntFlags) & (INT_RX | INT_TX);
+}
+
+// Description: Disable specific interrupt types.
+// Syntax: MultiSerialInstance.disableInterrupt(types)
+// Parameter: types - bitmask of INT_RX and/or INT_TX for which interrupt(s) to disable
+// Returns: nothing
+void MultiSerial::disableInterrupt(byte interruptTypes) {
+  byte curIntFlags = msReadRegister(IER) & (INT_RX | INT_TX);
+  msWriteRegister(IER, (interruptTypes ^ curIntFlags) & (INT_RX | INT_TX);
 }
 
 // Private Methods /////////////////////////////////////////////////////////////
