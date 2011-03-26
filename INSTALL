@@ -1,0 +1,8 @@
+Installation instructions for the Strich Labs MultiSerial Shield Library
+------------------------------------------------------------------------
+
+1. Inside the Arduino IDE, open Preferences and find your Sketchbook Location.
+2. Create a directory called "Libraries" in your Sketchbook location, if it does not already exist.
+3. Copy this entire folder as-is into the Libraries folder created in Step 2.
+4. Restart the Arduino IDE if it was running.
+5. When you launch the Arduino IDE, use Sketch->Import Library->MultiSerial to begin using the library.
