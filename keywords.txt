@@ -26,6 +26,8 @@ digitalWrite KEYWORD2
 digitalRead KEYWORD2
 enableInterrupt KEYWORD2
 disableInterrupt KEYWORD2
+print KEYWORD2
+println KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
@@ -34,4 +36,5 @@ disableInterrupt KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
-
+INT_RX
+INT_TX

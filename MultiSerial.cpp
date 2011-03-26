@@ -258,3 +258,15 @@ byte MultiSerial::msReadRegister(byte reg) {
   delay(10);
   return Wire.receive();
 }
+
+// Documentation ///////////////////////////////////////////////////////////////
+
+// Description: Outputs data to the serial port, converting numbers to their human-readable ASCII representations.
+// Syntax: MultiSerialInstance.print(value)
+// Syntax: MultiSerialInstance.print(value, base)
+// Syntax: MultiSerialInstance.print(string)
+// Parameter: value - Variable or literal to output
+// Parameter: base - Base to display number in (OCT, DEC, BIN, HEX) or number of decimal places for floating point values, DEC assumed if not supplied
+// Parameter: string - String to output
+// Returns: nothing
+// void MultiSerial::print(int value, byte base) {}
