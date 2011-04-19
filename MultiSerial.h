@@ -59,6 +59,7 @@ class MultiSerial : public Stream {
     MultiSerial(byte, byte);
     MultiSerial(void);
     void begin(unsigned long);
+    void begin(unsigned long, unsigned long);
     virtual void write(uint8_t);
     virtual int read(void);
     virtual int available(void);
@@ -70,7 +71,8 @@ class MultiSerial : public Stream {
     void pinMode(byte, byte);
     void digitalWrite(byte, byte);
     byte digitalRead(byte);
-    void enableInterrupt(void);
+    void enableInterrupt(byte);
+    void disableInterrupt(byte);
     using Print::write; // pull in write(str) and write(buf, size) from Print
   
   // library-accessible "private" interface

@@ -42,11 +42,21 @@ MultiSerial::MultiSerial(void) {
 // Public Methods //////////////////////////////////////////////////////////////
 // Functions available in Wiring sketches, this library, and other libraries
 
-// Description: Sets the data rate in bits per second for serial data transmission.
+// Description: Sets the data rate in bits per second for serial data transmission.  This is the normal constructor used.
 // Syntax: MultiSerialInstance.begin(speed)
 // Parameter: speed - communications speed in bits per second
 // Returns: nothing
 void MultiSerial::begin(unsigned long baud) {
+  // just call the other constructor, using the standard crystal frequency
+  begin(baud, MS_HZ);
+}
+
+// Description: Sets the data rate in bits per second for serial data transmission.  This constructor should be used if you are using a non-standard crystal.
+// Syntax: MultiSerialInstance.begin(speed, crystalHz)
+// Parameter: speed - communications speed in bits per second
+// Parameter: crystalHz - Speed of the crystal on the board, in Hz
+// Returns: nothing
+void MultiSerial::begin(unsigned long baud, unsigned long crystalHz) {
   // join i2c bus (no address as we want to be the master)
   Wire.begin();
   
@@ -59,7 +69,7 @@ void MultiSerial::begin(unsigned long baud) {
 
   // set the baud rate
   unsigned short baudDivisor;
-  baudDivisor = (MS_HZ + baud * 8L) / (baud * 16L);
+  baudDivisor = (crystalHz + baud * 8L) / (baud * 16L);
   msWriteRegister(DLL, baudDivisor & 0xFF);
   msWriteRegister(DLH, baudDivisor >> 8);
     
@@ -209,7 +219,7 @@ void MultiSerial::setWordSize(byte wordSize) {
 // Returns: nothing
 void MultiSerial::enableInterrupt(byte interruptTypes) {
   byte curIntFlags = msReadRegister(IER) & (INT_RX | INT_TX);
-  msWriteRegister(IER, (interruptTypes | curIntFlags) & (INT_RX | INT_TX);
+  msWriteRegister(IER, (interruptTypes | curIntFlags) & (INT_RX | INT_TX));
 }
 
 // Description: Disable specific interrupt types.
@@ -218,7 +228,7 @@ void MultiSerial::enableInterrupt(byte interruptTypes) {
 // Returns: nothing
 void MultiSerial::disableInterrupt(byte interruptTypes) {
   byte curIntFlags = msReadRegister(IER) & (INT_RX | INT_TX);
-  msWriteRegister(IER, (interruptTypes ^ curIntFlags) & (INT_RX | INT_TX);
+  msWriteRegister(IER, (interruptTypes ^ curIntFlags) & (INT_RX | INT_TX));
 }
 
 // Private Methods /////////////////////////////////////////////////////////////
