@@ -206,11 +206,23 @@ byte MultiSerial::digitalRead(byte pin) {
 // Parameter: size - word size to use on the port, valid values are 5, 6, 7, or 8
 // Returns: nothing
 void MultiSerial::setWordSize(byte wordSize) {
-  byte curValue;
+  byte regValue;
   
   wordSize -= 5;
-  curValue = msReadRegister(LCR);
-  msWriteRegister(LCR, curValue | wordSize);
+  regValue = msReadRegister(LCR);
+  regValue = (regValue & ~(1|2)) | (wordSize & (1|2));
+  msWriteRegister(LCR, regValue);
+}
+
+// Description: Set the number of stop bits.  Defaults to 1 when begin() is called, but can be changed if required.
+// Syntax: MultiSerialInstance.setStop(size)
+// Parameter: stopBits - 0 -> 1 stop bit; 1 -> 1.5 stop bits if word size == 5, 2 stop bits if word size != 5
+// Returns: nothing
+void MultiSerial::setStopBits(byte stopBits) {
+  byte regValue;
+  regValue = msReadRegister(LCR);
+  bitWrite(regValue, 1, stopBits);
+  msWriteRegister(LCR, regValue);
 }
 
 // Description: Enable specific interrupt types.

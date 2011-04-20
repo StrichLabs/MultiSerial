@@ -52,6 +52,11 @@
 #define INT_RX    0x01    // Receive Holding Register
 #define INT_TX    0x02    // Transmit Holding Register
 
+// Number of stop bits
+#define STOPBITS1   0x00  // 1 stop bit
+#define STOPBITS15  0x01  // 1.5 stop bits  (if 5-bit word size)
+#define STOPBITS2   0x01  // 2 stop bits    (if not 5-bit word size)
+
 // library interface description
 class MultiSerial : public Stream {
   // user-accessible "public" interface
@@ -73,6 +78,7 @@ class MultiSerial : public Stream {
     byte digitalRead(byte);
     void enableInterrupt(byte);
     void disableInterrupt(byte);
+    void setStopBits(byte);
     using Print::write; // pull in write(str) and write(buf, size) from Print
   
   // library-accessible "private" interface
