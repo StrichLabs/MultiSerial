@@ -264,8 +264,6 @@ void MultiSerial::msWriteRegister(byte reg, byte val) {
   // send the actual data we want to write and commit the transaction
   Wire.send(val);
   Wire.endTransmission();
-  // TODO: is this needed?
-  delay(10);
 }
 
 // read a value from one of the controller chip's registers and return it
@@ -273,11 +271,7 @@ byte MultiSerial::msReadRegister(byte reg) {
   Wire.beginTransmission(addr);
   msSendSubAddr(reg);
   Wire.endTransmission();
-  // TODO: is this needed?
-  delay(10);
   Wire.requestFrom((byte)addr, (byte)1);
-  // TODO: is this needed?
-  delay(10);
   return Wire.receive();
 }
 
