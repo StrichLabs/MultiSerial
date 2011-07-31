@@ -66,6 +66,7 @@ class MultiSerial : public Stream {
     void begin(unsigned long);
     void begin(unsigned long, unsigned long);
     virtual void write(uint8_t);
+    virtual void write(uint8_t[], uint8_t);
     virtual int read(void);
     virtual int available(void);
     virtual void flush(void);
@@ -88,6 +89,7 @@ class MultiSerial : public Stream {
     byte peek_buf[2];
     byte peek_buf_valid[2];
     void msWriteRegister(byte, byte);
+    void msWriteRegister(byte, byte[], byte);
     byte msReadRegister(byte);
     void msSendSubAddr(byte);
 };

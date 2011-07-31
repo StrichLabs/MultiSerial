@@ -15,7 +15,10 @@
 //#define MS_HZ   3686400L
 // Revision 3 and above boards have a 11.0592MHz crystal on them
 #define   MS_HZ 11059200L
-  
+
+// track if the shield has been reset, as we only ever want to do this once
+static int needsReset=1;
+
 // Constructor /////////////////////////////////////////////////////////////////
 // Function that handles the creation and setup of instances
 
@@ -60,8 +63,14 @@ void MultiSerial::begin(unsigned long baud, unsigned long crystalHz) {
   // join i2c bus (no address as we want to be the master)
   Wire.begin();
   
-  // reset the UART so we're starting off in a known state
-  msWriteRegister(IOControl, 0x8);
+  // if this is the first time the shield is used, reset the UART so
+  // that we can start off in a known state
+  // FIXME: will this work for >1 shield though?
+  if(needsReset==1) {
+  	msWriteRegister(IOControl, 0x8);
+  	needsReset=0;
+	}
+  
   delay(25);
   
   // switch to the special register bank
@@ -91,6 +100,17 @@ void MultiSerial::begin(unsigned long baud, unsigned long crystalHz) {
 void MultiSerial::write(uint8_t val) {
   msWriteRegister(THR, val);
 }
+
+// Description: Transmit a series of bytes of data out the serial port.
+// Syntax: MultiSerialInstance.write(data, nbrBytes)
+// Parameter: data - array of bytes of data to write
+// Parameter: nbrBytes - number of elements in the data array
+// Returns: nothing
+// FIXME: This function should return something useful
+void MultiSerial::write(uint8_t val[], uint8_t nbrBytes) {
+  msWriteRegister(THR, val, nbrBytes);
+}
+
 
 // Description: Read the next available byte of available serial data.
 // Syntax: MultiSerialInstance.read()
@@ -257,12 +277,27 @@ void MultiSerial::msSendSubAddr(byte reg) {
 
 // write a value to one of the controller chip's registers
 void MultiSerial::msWriteRegister(byte reg, byte val) {
-  // begin the i2c transmission to the 
+  // begin the i2c transmission to the chip
   Wire.beginTransmission(addr);
   // send the register address we want to write to
   msSendSubAddr(reg);
   // send the actual data we want to write and commit the transaction
   Wire.send(val);
+  Wire.endTransmission();
+}
+
+// write a series of values to sequential addresses in the the controller chip's registers
+void MultiSerial::msWriteRegister(byte reg, byte val[], byte nbrValues) {
+  byte i;
+  
+  // begin the i2c transmission to the chip
+  Wire.beginTransmission(addr);
+  // send the register address we want to write to
+  msSendSubAddr(reg);
+  // send the actual data we want to write and commit the transaction
+  for(i=0; i<nbrValues; i++) {
+    Wire.send(val[i]);
+  }
   Wire.endTransmission();
 }
 
