@@ -69,7 +69,7 @@ void MultiSerial::begin(unsigned long baud, unsigned long crystalHz) {
   if(needsReset==1) {
   	msWriteRegister(IOControl, 0x8);
   	needsReset=0;
-	}
+  }
   
   delay(25);
   
