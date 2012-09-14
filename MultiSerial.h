@@ -7,10 +7,12 @@
 #ifndef MultiSerial_h
 #define MultiSerial_h
 
-// include core Wiring API
-#include "WProgram.h"
-// include types & constants of Wiring core API
-#include "WConstants.h"
+#if ARDUINO < 100
+  #error The MultiSerial library requires Arduino 1.0 or later.  Please upgrade your development environment or use an older revision of the MultiSerial library.
+#endif // ARDUINO < 100
+
+// include core Arduno functionality
+#include "Arduino.h"
 // include print support
 #include "Stream.h"
 
@@ -65,7 +67,7 @@ class MultiSerial : public Stream {
     MultiSerial(void);
     void begin(unsigned long);
     void begin(unsigned long, unsigned long);
-    virtual void write(uint8_t);
+    virtual size_t write(uint8_t);
     virtual void write(uint8_t[], uint8_t);
     virtual int read(void);
     virtual int available(void);

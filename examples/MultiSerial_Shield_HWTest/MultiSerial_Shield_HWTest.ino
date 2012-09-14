@@ -222,7 +222,7 @@ void setup() {
     for(chan=0; chan <= 1; chan++) {
       MultiSerial msTest = MultiSerial(boardAddr, chan);
       msTest.begin(9600);
-      msTest.enableInterrupt();
+      msTest.enableInterrupt(INT_TX | INT_RX);
       byte controllerFails = 0;
       controllerFails += testController(msTest, chan);
       boardFails += controllerFails;

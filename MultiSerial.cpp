@@ -97,7 +97,7 @@ void MultiSerial::begin(unsigned long baud, unsigned long crystalHz) {
 // Parameter: data - byte of data to write
 // Returns: nothing
 // FIXME: This function should return something useful
-void MultiSerial::write(uint8_t val) {
+size_t MultiSerial::write(uint8_t val) {
   msWriteRegister(THR, val);
 }
 
@@ -272,7 +272,7 @@ void MultiSerial::msSendSubAddr(byte reg) {
   
   subAddr |= (chan << 1);
   subAddr |= (reg << 3);
-  Wire.send(subAddr);
+  Wire.write(subAddr);
 }
 
 // write a value to one of the controller chip's registers
@@ -282,7 +282,7 @@ void MultiSerial::msWriteRegister(byte reg, byte val) {
   // send the register address we want to write to
   msSendSubAddr(reg);
   // send the actual data we want to write and commit the transaction
-  Wire.send(val);
+  Wire.write(val);
   Wire.endTransmission();
 }
 
@@ -296,7 +296,7 @@ void MultiSerial::msWriteRegister(byte reg, byte val[], byte nbrValues) {
   msSendSubAddr(reg);
   // send the actual data we want to write and commit the transaction
   for(i=0; i<nbrValues; i++) {
-    Wire.send(val[i]);
+    Wire.write(val[i]);
   }
   Wire.endTransmission();
 }
@@ -307,7 +307,7 @@ byte MultiSerial::msReadRegister(byte reg) {
   msSendSubAddr(reg);
   Wire.endTransmission();
   Wire.requestFrom((byte)addr, (byte)1);
-  return Wire.receive();
+  return Wire.read();
 }
 
 // Documentation ///////////////////////////////////////////////////////////////
