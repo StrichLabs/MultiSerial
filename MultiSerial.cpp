@@ -241,7 +241,7 @@ void MultiSerial::setWordSize(byte wordSize) {
 void MultiSerial::setStopBits(byte stopBits) {
   byte regValue;
   regValue = msReadRegister(LCR);
-  bitWrite(regValue, 1, stopBits);
+  bitWrite(regValue, 2, stopBits);
   msWriteRegister(LCR, regValue);
 }
 
